@@ -852,5 +852,18 @@
         }
     </script>
     <div id="save-toast" class="save-toast">💾 进度已保存</div>
+    <div style="position: fixed; bottom: 5px; width: 100%; text-align: center; color: rgba(255,255,255,0.2); font-size: 0.75rem; pointer-events: none; z-index: 9999;">
+        © 2026 315班专属定制 | 盗版必究
+    </div>
+    <script>
+        // 禁用鼠标右键
+        document.oncontextmenu = function(e) { e.preventDefault(); return false; };
+        // 禁用键盘 F12 (开发者工具) 和 Ctrl+U (查看源码)
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85) || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+                e.preventDefault(); return false;
+            }
+        };
+    </script>
 </body>
 </html>
