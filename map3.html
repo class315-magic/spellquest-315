@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>315班 - map3 点读</title>
+    <style>
+        body { background-color: #e8f5e9; text-align: center; font-family: 'Segoe UI', sans-serif; color: #2e7d32; margin: 0; padding: 10px; }
+        h2 { margin-bottom: 5px; }
+        .game-board { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; width: 100%; }
+        .image-container { position: relative; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border-radius: 12px; max-width: 98%; }
+        .bg-image { display: block; max-width: 100%; height: auto; border-radius: 12px; }
+        .click-box { position: absolute; cursor: pointer; border: 3px solid transparent; border-radius: 8px; transition: all 0.2s; box-sizing: border-box; }
+        .click-box:hover { border: 3px solid #ff5722; background-color: rgba(255, 87, 34, 0.2); transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+        .click-box:active { transform: scale(0.95); }
+        .back-btn { margin-bottom: 15px; padding: 10px 20px; background: #00f2fe; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,242,254,0.4); text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">⬅️ 返回游戏主页</a>
+    <h2>🗺️ 魔法点读地图</h2>
+    <p>👇 上下滑动查看全部，点击发音 👇</p>
+    
+    <div class="game-board">
+        
+<div class="image-container">
+    <img src="map3_1.jpg" alt="单词地图" class="bg-image">
+    <div class="click-box" style="left: 13.2578125%; top: 1.1802325581395348%; width: 21.401041666666664%; height: 4.725290697674419%;" onclick="playSound('firefighter')"></div>
+    <div class="click-box" style="left: 48.67447916666667%; top: 0.09011627906976738%; width: 27.520833333333332%; height: 5.1976744186046515%;" onclick="playSound('police_officer')"></div>
+    <div class="click-box" style="left: 38.2578125%; top: 43.00436046511628%; width: 15.216145833333334%; height: 4.325581395348838%;" onclick="playSound('farmer')"></div>
+    <div class="click-box" style="left: 78.8828125%; top: 52.96075581395349%; width: 17.169270833333336%; height: 4.616279069767442%;" onclick="playSound('teacher')"></div>
+    <div class="click-box" style="left: 17.5546875%; top: 52.23401162790697%; width: 14.955729166666666%; height: 4.325581395348838%;" onclick="playSound('doctor')"></div>
+    <div class="click-box" style="left: 24.130208333333332%; top: 25.671511627906973%; width: 21.401041666666664%; height: 4.398255813953488%;" onclick="playSound('bus_driver')"></div>
+    <div class="click-box" style="left: 26.083333333333332%; top: 19.058139534883722%; width: 17.950520833333336%; height: 4.398255813953488%;" onclick="playSound('fire')"></div>
+    <div class="click-box" style="left: 62.020833333333336%; top: 43.87645348837209%; width: 10.3984375%; height: 4.325581395348838%;" onclick="playSound('sick')"></div>
+    <div class="click-box" style="left: 24.065104166666668%; top: 39.55232558139535%; width: 13.1328125%; height: 4.616279069767442%;" onclick="playSound('soup')"></div>
+    <div class="click-box" style="left: 80.70572916666666%; top: 26.10755813953488%; width: 9.291666666666668%; height: 4.071220930232558%;" onclick="playSound('Mrs')"></div>
+    <div class="click-box" style="left: 82.52864583333334%; top: 43.73110465116279%; width: 9.096354166666668%; height: 4.325581395348838%;" onclick="playSound('job')"></div>
+    <div class="click-box" style="left: 76.47395833333334%; top: 17.6046511627907%; width: 17.885416666666664%; height: 7.632267441860465%;" onclick="playSound('people')"></div>
+    <div class="click-box" style="left: 74.1953125%; top: 80.50436046511628%; width: 14.760416666666666%; height: 4.870639534883721%;" onclick="playSound('know')"></div>
+    <div class="click-box" style="left: 51.669270833333336%; top: 50.92587209302325%; width: 15.671875%; height: 4.361918604651162%;" onclick="playSound('dentist')"></div>
+</div>
+<div class="image-container">
+    <img src="map3_2.jpg" alt="单词地图" class="bg-image">
+    <div class="click-box" style="left: 6.682291666666667%; top: 3.9055232558139528%; width: 16.713541666666664%; height: 5.0523255813953485%;" onclick="playSound('sweet')"></div>
+    <div class="click-box" style="left: 36.95572916666667%; top: 3.7601744186046515%; width: 16.0625%; height: 4.9433139534883725%;" onclick="playSound('check')"></div>
+    <div class="click-box" style="left: 77.05989583333334%; top: 19.530523255813954%; width: 21.075520833333336%; height: 5.7063953488372094%;" onclick="playSound('hospital')"></div>
+    <div class="click-box" style="left: 80.8359375%; top: 44.0218023255814%; width: 15.0859375%; height: 4.325581395348838%;" onclick="playSound('nurse')"></div>
+    <div class="click-box" style="left: 70.875%; top: 34.86482558139535%; width: 25.111979166666664%; height: 5.161337209302326%;" onclick="playSound('look_after')"></div>
+    <div class="click-box" style="left: 1.864583333333333%; top: 59.428779069767444%; width: 38.9140625%; height: 5.161337209302326%;" onclick="playSound('fill_holes_in_teeth')"></div>
+    <div class="click-box" style="left: 55.640625%; top: 58.59302325581395%; width: 44.51302083333333%; height: 8.758720930232558%;" onclick="playSound('pull_bad_teeth_out')"></div>
+    <div class="click-box" style="left: 33.375%; top: 67.71366279069767%; width: 43.86197916666667%; height: 5.088662790697674%;" onclick="playSound('twice_or_three_times')"></div>
+</div>
+    </div>
+
+    <script>
+        function playSound(fileName) {
+            let audio = new Audio('audios/' + fileName + '.mp3');
+            audio.currentTime = 0; 
+            audio.play().catch(e => console.log("等待用户交互"));
+        }
+    </script>
+</body>
+</html>

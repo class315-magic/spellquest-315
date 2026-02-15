@@ -1,0 +1,14 @@
+paper-cut
+triangle
+circle
+shape
+square
+star
+painting
+rectangle
+clock
+side
+corner
+ask
+tiger
+say

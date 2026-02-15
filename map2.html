@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>315班 - map2 点读</title>
+    <style>
+        body { background-color: #e8f5e9; text-align: center; font-family: 'Segoe UI', sans-serif; color: #2e7d32; margin: 0; padding: 10px; }
+        h2 { margin-bottom: 5px; }
+        .game-board { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; width: 100%; }
+        .image-container { position: relative; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border-radius: 12px; max-width: 98%; }
+        .bg-image { display: block; max-width: 100%; height: auto; border-radius: 12px; }
+        .click-box { position: absolute; cursor: pointer; border: 3px solid transparent; border-radius: 8px; transition: all 0.2s; box-sizing: border-box; }
+        .click-box:hover { border: 3px solid #ff5722; background-color: rgba(255, 87, 34, 0.2); transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+        .click-box:active { transform: scale(0.95); }
+        .back-btn { margin-bottom: 15px; padding: 10px 20px; background: #00f2fe; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,242,254,0.4); text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">⬅️ 返回游戏主页</a>
+    <h2>🗺️ 魔法点读地图</h2>
+    <p>👇 上下滑动查看全部，点击发音 👇</p>
+    
+    <div class="game-board">
+        
+<div class="image-container">
+    <img src="map2_1.jpg" alt="单词地图" class="bg-image">
+    <div class="click-box" style="left: 25.7578125%; top: 18.40406976744186%; width: 13.5234375%; height: 4.398255813953488%;" onclick="playSound('Chinese')"></div>
+    <div class="click-box" style="left: 21.65625%; top: 33.30232558139535%; width: 11.635416666666668%; height: 3.925872093023256%;" onclick="playSound('Maths')"></div>
+    <div class="click-box" style="left: 22.307291666666664%; top: 50.38081395348837%; width: 12.872395833333332%; height: 4.216569767441861%;" onclick="playSound('English')"></div>
+    <div class="click-box" style="left: 60.458333333333336%; top: 16.950581395348838%; width: 6.427083333333334%; height: 3.925872093023256%;" onclick="playSound('PE')"></div>
+    <div class="click-box" style="left: 67.48958333333334%; top: 31.013081395348834%; width: 11.635416666666668%; height: 4.434593023255815%;" onclick="playSound('Music')"></div>
+    <div class="click-box" style="left: 67.68489583333334%; top: 43.84011627906977%; width: 7.338541666666666%; height: 3.7805232558139537%;" onclick="playSound('Art')"></div>
+    <div class="click-box" style="left: 68.59635416666666%; top: 55.577034883720934%; width: 5.515625%; height: 3.6351744186046515%;" onclick="playSound('IT')"></div>
+    <div class="click-box" style="left: 62.346354166666664%; top: 67.6046511627907%; width: 13.1328125%; height: 4.071220930232558%;" onclick="playSound('Science')"></div>
+    <div class="click-box" style="left: 8.5703125%; top: 79.99563953488372%; width: 13.5234375%; height: 3.707848837209302%;" onclick="playSound('club')"></div>
+    <div class="click-box" style="left: 39.55989583333333%; top: 59.537790697674424%; width: 21.010416666666664%; height: 4.870639534883721%;" onclick="playSound('student')"></div>
+    <div class="click-box" style="left: 24.390625%; top: 4.6686046511627906%; width: 51.34895833333333%; height: 6.941860465116279%;" onclick="playSound('different')"></div>
+    <div class="click-box" style="left: 29.794270833333332%; top: 9.210755813953488%; width: 40.21614583333333%; height: 6.869186046511628%;" onclick="playSound('subject')"></div>
+</div>
+<div class="image-container">
+    <img src="map2_2.jpg" alt="单词地图" class="bg-image">
+    <div class="click-box" style="left: 70.35416666666666%; top: 5.795058139534883%; width: 13.197916666666668%; height: 4.688953488372093%;" onclick="playSound('class')"></div>
+    <div class="click-box" style="left: 67.03385416666666%; top: 18.513081395348838%; width: 22.638020833333336%; height: 5.161337209302326%;" onclick="playSound('timetable')"></div>
+    <div class="click-box" style="left: 12.932291666666666%; top: 4.995639534883721%; width: 47.3125%; height: 5.234011627906977%;" onclick="playSound('raise_the_national_flag')"></div>
+    <div class="click-box" style="left: 64.36458333333334%; top: 31.594476744186046%; width: 28.888020833333332%; height: 10.030523255813954%;" onclick="playSound('work_out')"></div>
+    <div class="click-box" style="left: 39.8203125%; top: 74.61773255813954%; width: 26.739583333333336%; height: 4.725290697674419%;" onclick="playSound('after_school')"></div>
+    <div class="click-box" style="left: 58.114583333333336%; top: 45.111918604651166%; width: 32.859375%; height: 8.104651162790697%;" onclick="playSound('put_on_a_play')"></div>
+    <div class="click-box" style="left: 7.203125%; top: 69.63953488372093%; width: 28.302083333333332%; height: 5.306686046511628%;" onclick="playSound('model_plane')"></div>
+    <div class="click-box" style="left: 78.23177083333334%; top: 54.850290697674424%; width: 21.7265625%; height: 7.886627906976744%;" onclick="playSound('Great!')"></div>
+</div>
+    </div>
+
+    <script>
+        function playSound(fileName) {
+            let audio = new Audio('audios/' + fileName + '.mp3');
+            audio.currentTime = 0; 
+            audio.play().catch(e => console.log("等待用户交互"));
+        }
+    </script>
+</body>
+</html>

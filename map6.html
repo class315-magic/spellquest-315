@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>315班 - map6 点读</title>
+    <style>
+        body { background-color: #e8f5e9; text-align: center; font-family: 'Segoe UI', sans-serif; color: #2e7d32; margin: 0; padding: 10px; }
+        h2 { margin-bottom: 5px; }
+        .game-board { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; width: 100%; }
+        .image-container { position: relative; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border-radius: 12px; max-width: 98%; }
+        .bg-image { display: block; max-width: 100%; height: auto; border-radius: 12px; }
+        .click-box { position: absolute; cursor: pointer; border: 3px solid transparent; border-radius: 8px; transition: all 0.2s; box-sizing: border-box; }
+        .click-box:hover { border: 3px solid #ff5722; background-color: rgba(255, 87, 34, 0.2); transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+        .click-box:active { transform: scale(0.95); }
+        .back-btn { margin-bottom: 15px; padding: 10px 20px; background: #00f2fe; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,242,254,0.4); text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">⬅️ 返回游戏主页</a>
+    <h2>🗺️ 魔法点读地图</h2>
+    <p>👇 上下滑动查看全部，点击发音 👇</p>
+    
+    <div class="game-board">
+        
+<div class="image-container">
+    <img src="map6_1.jpg" alt="单词地图" class="bg-image">
+    <div class="click-box" style="left: 72.56770833333334%; top: 10.555232558139535%; width: 7.924479166666666%; height: 4.870639534883721%;" onclick="playSound('day')"></div>
+    <div class="click-box" style="left: 5.966145833333333%; top: 62.11773255813954%; width: 11.375%; height: 4.616279069767442%;" onclick="playSound('night')"></div>
+    <div class="click-box" style="left: 36.82552083333333%; top: 5.686046511627906%; width: 10.072916666666668%; height: 4.216569767441861%;" onclick="playSound('hour')"></div>
+    <div class="click-box" style="left: 35.06770833333333%; top: 10.373546511627906%; width: 13.848958333333332%; height: 4.216569767441861%;" onclick="playSound('minute')"></div>
+    <div class="click-box" style="left: 34.546875%; top: 15.097383720930232%; width: 14.434895833333332%; height: 4.325581395348838%;" onclick="playSound('second')"></div>
+    <div class="click-box" style="left: 83.11458333333334%; top: 66.44186046511628%; width: 13.1328125%; height: 4.616279069767442%;" onclick="playSound('month')"></div>
+    <div class="click-box" style="left: 19.833333333333336%; top: 20.329941860465116%; width: 9.552083333333332%; height: 3.9985465116279073%;" onclick="playSound('year')"></div>
+    <div class="click-box" style="left: 32.46354166666667%; top: 43.94912790697674%; width: 16.583333333333336%; height: 4.252906976744185%;" onclick="playSound('measure')"></div>
+    <div class="click-box" style="left: 45.94010416666667%; top: 60.91860465116279%; width: 17.104166666666664%; height: 4.616279069767442%;" onclick="playSound('question')"></div>
+    <div class="click-box" style="left: 20.744791666666664%; top: 87.22674418604652%; width: 14.174479166666668%; height: 4.252906976744185%;" onclick="playSound('around')"></div>
+    <div class="click-box" style="left: 55.770833333333336%; top: 39.661337209302324%; width: 16.518229166666664%; height: 4.252906976744185%;" onclick="playSound('exercise')"></div>
+    <div class="click-box" style="left: 58.700520833333336%; top: 17.93168604651163%; width: 17.885416666666664%; height: 4.470930232558139%;" onclick="playSound('get_ready')"></div>
+    <div class="click-box" style="left: 68.20572916666666%; top: 60.591569767441854%; width: 29.669270833333332%; height: 4.180232558139535%;" onclick="playSound('at_the_same_time')"></div>
+</div>
+    </div>
+
+    <script>
+        function playSound(fileName) {
+            let audio = new Audio('audios/' + fileName + '.mp3');
+            audio.currentTime = 0; 
+            audio.play().catch(e => console.log("等待用户交互"));
+        }
+    </script>
+</body>
+</html>

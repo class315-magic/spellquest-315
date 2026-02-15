@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>315班单词大闯关</title>
+    <style>
+        /* ==========================================
+           1. 全局基础与防误触重置
+           ========================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation; 
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        :root {
+            --success: #10B981;
+            --error: #EF4444;
+            --text: #ffffff;
+        }
+
+        body {
+            /* 魔法深渊渐变背景 */
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hidden { display: none !important; }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        /* ==========================================
+           2. 顶部状态栏与积分板
+           ========================================== */
+        .score-board {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: #FFD700;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            font-weight: bold;
+            font-size: 1.2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .status-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #a8dadc;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* ==========================================
+           3. 战斗舞台 (Arena)
+           ========================================== */
+        .arena {
+            width: 100%;
+            height: 140px;
+            background: #000000; 
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3); 
+            position: relative;
+            overflow: hidden; 
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 8px;
+            left: 50%; 
+            transform: translateX(-50%);
+            color: #FFD700; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            background: rgba(0,0,0,0.6); 
+            padding: 4px 15px; 
+            border-radius: 15px;
+            z-index: 5;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .entity {
+            position: absolute;
+            bottom: 10px; 
+            width: 75px; 
+            height: auto;
+            transition: transform 0.1s;
+        }
+        
+        #harry-emoji { left: 15px; z-index: 2; width: 112px; }
+        #monster-emoji { right: 15px; z-index: 2; }
+        
+        .moving-left { right: calc(100% - 90px) !important; }
+
+        #magic-beam {
+            position: absolute;
+            bottom: 45px; 
+            left: 80px; 
+            width: 40px; 
+            height: auto;
+            opacity: 0; 
+            z-index: 3;
+            filter: drop-shadow(0 0 8px #00f2fe);
+        }
+        .shooting { left: calc(100% - 90px) !important; opacity: 1 !important; }
+
+        /* ==========================================
+           4. 学习内容区 (深色玻璃态卡片)
+           ========================================== */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 25px 20px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .word-text { 
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #ffffff; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+            margin: 5px 0; 
+            line-height: 1.2;
+        }
+
+        .meaning-text { font-size: 1.2rem; color: #b0c4de; margin-bottom: 20px; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            padding: 16px; border-radius: 15px; font-size: 1.1rem; font-weight: bold;
+            color: white; text-align: center;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .option-btn:active { 
+            transform: scale(0.95);
+            background: rgba(255, 215, 0, 0.2); 
+            border-color: #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.3); border-color: var(--success); }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.3); border-color: var(--error); }
+
+        .spell-input {
+            width: 90%;
+            padding: 15px; font-size: 1.5rem; text-align: center;
+            background: rgba(0,0,0,0.3); color: white; border: 2px solid rgba(255,255,255,0.2); 
+            border-radius: 12px; outline: none; margin-bottom: 15px;
+        }
+        .spell-input:focus { border-color: #00f2fe; }
+
+        /* ==========================================
+           5. 选单界面
+           ========================================== */
+        #view-menu { text-align: center; padding-top: 40px; }
+        .unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px;
+            width: 100%; margin-top: 30px; }
+        .unit-item { 
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 12px; padding: 20px 0; text-align: center; cursor: pointer; 
+            font-weight: bold;
+            transition: all 0.2s; backdrop-filter: blur(5px);
+        }
+        .unit-item:active { transform: scale(0.95); }
+        .unit-item.active { 
+            border-color: #00f2fe;
+            background: rgba(0, 242, 254, 0.1);
+            color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+        .unit-item.locked { opacity: 0.5; cursor: not-allowed; }
+
+        /* ==========================================
+           🌟 魔法模式选择弹窗特效
+           ========================================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 3000; opacity: 0; pointer-events: none; transition: all 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: linear-gradient(135deg, #16222A 0%, #3A6073 100%);
+            border: 2px solid #00f2fe; border-radius: 20px;
+            padding: 30px 20px; width: 85%; max-width: 350px;
+            text-align: center; box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+            transform: translateY(20px) scale(0.9); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0) scale(1); }
+        .modal-title { color: #fff; font-size: 1.5rem; margin-bottom: 25px; text-shadow: 0 0 10px #00f2fe; font-weight: bold;}
+        .mode-btn {
+            display: block; width: 100%; padding: 18px; margin-bottom: 15px;
+            border-radius: 15px; font-size: 1.2rem; font-weight: bold; color: #fff;
+            border: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .mode-btn.map { background: rgba(16, 185, 129, 0.25); border-color: #10B981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.8); }
+        .mode-btn.combat { background: rgba(239, 68, 68, 0.25); border-color: #EF4444; text-shadow: 0 0 5px rgba(239, 68, 68, 0.8); }
+        .mode-btn:active { transform: scale(0.95); }
+        
+        /* 新增：被锁住的灰色按钮样式 */
+        .locked-btn {
+            background: rgba(100, 100, 100, 0.5) !important;
+            border-color: #555 !important;
+            color: #9ca3af !important;
+            cursor: not-allowed !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+        }
+        .locked-btn:active { transform: none !important; }
+
+        .close-modal { color: #a8dadc; margin-top: 15px; font-size: 1rem; text-decoration: underline; cursor: pointer; padding: 10px; }
+
+        /* ==========================================
+           6. 特效与动画 
+           ========================================== */
+        .flash-red { animation: flashRed 0.5s; }
+        @keyframes flashRed { 
+            0% { background-color: rgba(239, 68, 68, 0.4); } 
+            100% { background-color: rgba(0, 0, 0, 0.2); } 
+        }
+        
+        .anim-shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 
+            0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 
+            50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 
+            100% { transform: translateX(0); } 
+        }
+
+        .feedback-toast {
+            position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.85); color: white; padding: 8px 18px; border-radius: 12px;
+            font-size: 0.95rem; font-weight: bold; opacity: 0; transition: all 0.3s ease-out; 
+            pointer-events: none; z-index: 10; width: max-content; max-width: 90%; text-align: center; line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .feedback-toast.show { opacity: 1; top: 15px; }
+        .feedback-toast.success { background: rgba(16, 185, 129, 0.9); box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+        .feedback-toast.error { background: rgba(239, 68, 68, 0.9); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+
+        .score-popup {
+            position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            color: #FFD700; font-weight: 900; text-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 2px 2px 4px #000;
+            pointer-events: none; z-index: 2000; width: 100%; text-align: center;
+            animation: floatUp 2.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+        
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translate(-50%, -20%) scale(0.5); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(1.2); }
+        }
+
+        .save-toast {
+            position: fixed; bottom: 20px; right: 20px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+            color: #4ade80; padding: 10px 20px; border-radius: 30px; font-size: 0.9rem; font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(20px); transition: all 0.4s ease;
+            pointer-events: none; z-index: 9999; border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .save-toast.show { opacity: 1; transform: translateY(0); }
+
+        .btn-link { background: none; border: none; color: #a8dadc; text-decoration: underline; margin-top: 15px; cursor: pointer; font-size: 1rem; }
+        .footer-reset { margin-top: 50px; margin-bottom: 20px; font-size: 0.8rem; color: #6B7280; text-decoration: underline; cursor: pointer; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div id="score-board" class="score-board">🏆 Score: 0</div>
+
+    <div id="mode-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-unit-title">选择挑战模式</div>
+            <button class="mode-btn map" onclick="enterMode('map')">🗺️ 魔法点读地图 (复习)</button>
+            <button id="btn-combat" class="mode-btn combat">⚔️ 魔法对决闯关 (实战)</button>
+            <div class="close-modal" onclick="closeModal()">⬅️ 返回上一级</div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div id="view-menu">
+            <h1 style="color:#fff; margin-bottom: 10px; font-size: 2.2rem; text-shadow: 0 0 15px rgba(0,242,254,0.5);">315班单词大闯关</h1>
+            <p style="color:#a8dadc; font-size: 1rem;">魔法对决版</p>
+        
+            <div id="unit-list" class="unit-grid"></div>
+            
+            <div onclick="resetProgress()" class="footer-reset">
+                Reset All Progress (重置进度)
+            </div> 
+        </div>
+
+        <div id="view-game" class="hidden">
+            
+            <div id="battle-arena" class="arena">
+                <div id="arena-timer" class="timer-display">⏳ 20s</div>
+                <img src="assets/harry.png" id="harry-emoji" class="entity" alt="Harry">
+                <img src="assets/spell.png" id="magic-beam" alt="Spell">
+                <img src="assets/monster.png" id="monster-emoji" class="entity" alt="Monster">
+            </div>
+
+            <div class="status-bar">
+                <span id="status-phase">Phase 1</span>
+                <span id="status-progress">1/5</span>
+            </div>
+
+            <div class="card">
+                <div id="feedback" class="feedback-toast">Correct!</div>
+             
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <div id="area-word" class="word-text hidden">Word</div>
+                    <button onclick="speakCurrentWord()" style="background:none; border:none; font-size:1.8rem; cursor:pointer; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));">🔊</button>
+                </div>
+                <div id="area-meaning" class="meaning-text hidden">Meaning</div>
+
+                <div id="area-options" class="options-grid hidden"></div>
+
+                <div id="area-spell" class="hidden" style="width:100%">
+                    <input type="text" id="input-spell" class="spell-input" placeholder="输入咒语 (拼写)" autocomplete="off">
+                    <button class="option-btn" style="background: rgba(0, 242, 254, 0.2); border-color: #00f2fe; color: white;" onclick="checkSpelling()">⚡ 发射魔咒</button>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn-link" onclick="exitToMenu()">退出战场</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="word_data.js"></script>
+
+    <script>
+        const Game = {
+            unit: 1, groupIndex: 0, wordIndex: 0, phase: 1,
+            score: 0, timerId: null, timeLeft: 20,  
+            currentWords: [], 
+            failCount: 0,
+            allGroups: [],
+            sfxShoot: new Audio('assets/shoot.mp3'),
+            sfxFail: new Audio('assets/fail.mp3')
+        };
+
+        let selectedUnitForModal = null;
+
+        function autoSave() {
+            localStorage.setItem('progress_unit_' + Game.unit, Game.groupIndex);
+            localStorage.setItem('currentScore', Game.score);
+            const toast = document.getElementById('save-toast');
+            if(toast) {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+        }
+
+        function addScore(points, customText) {
+            Game.score += points;
+            document.getElementById('score-board').innerText = `🏆 Score: ${Game.score}`;
+            localStorage.setItem('totalScore', Game.score); 
+            
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            if (customText) {
+                popup.innerHTML = customText;
+                popup.style.fontSize = '2.5rem';
+                popup.style.lineHeight = '1.4';
+            } else {
+                popup.innerText = `🎉 +${points} 分!`;
+                popup.style.fontSize = '3.5rem';
+            }
+            
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 2500); 
+            autoSave();
+        }
+
+        function checkAutoLoad() {
+            const savedUnit = localStorage.getItem('currentUnit');
+            const savedGroup = localStorage.getItem('currentGroup');
+            const savedScore = localStorage.getItem('currentScore');
+            if (savedScore) {
+                Game.score = parseInt(savedScore);
+                document.getElementById('score-board').innerText = `🏆 Score: ${Game.score}`;
+            }
+
+            if (savedUnit && savedGroup) {
+                const u = parseInt(savedUnit);
+                const g = parseInt(savedGroup);
+                if(confirm(`检测到上次学习进度：Unit ${u} - Group ${g + 1}\n当前积分：${Game.score}\n是否继续？`)) {
+                    startGame(u, g);
+                } else {
+                    renderMenu();
+                }
+            } else {
+                renderMenu();
+            }
+        }
+
+        function resetProgress() {
+            if (confirm("⚠️ 警告：\n确定要清空所有学习进度吗？\n这将无法恢复！")) {
+                localStorage.clear();
+                location.reload();
+            }
+        } 
+
+        const UI = {
+            menu: document.getElementById('view-menu'),
+            game: document.getElementById('view-game'),
+            unitList: document.getElementById('unit-list'),
+            statusPhase: document.getElementById('status-phase'),
+            statusProg: document.getElementById('status-progress'),
+            areaWord: document.getElementById('area-word'),
+            areaMeaning: document.getElementById('area-meaning'),
+            areaOpts: document.getElementById('area-options'),
+            areaSpell: document.getElementById('area-spell'),
+            inputSpell: document.getElementById('input-spell'),
+            feedback: document.getElementById('feedback'),
+            harry: document.getElementById('harry-emoji'),
+            monster: document.getElementById('monster-emoji'),
+            spell: document.getElementById('magic-beam')
+        };
+
+        function startCombatTimer() {
+            clearInterval(Game.timerId);
+            Game.timeLeft = 20;
+            document.getElementById('arena-timer').innerText = `⏳ 20s`;
+            const monster = UI.monster;
+            monster.style.transition = 'none';
+            monster.style.right = '15px';
+            void monster.offsetWidth;
+            monster.style.transition = 'right 20s linear';
+            monster.classList.add('moving-left');
+            Game.timerId = setInterval(() => {
+                Game.timeLeft--;
+                document.getElementById('arena-timer').innerText = `⏳ ${Game.timeLeft}s`;
+                if(Game.timeLeft <= 0) handleTimeout(); 
+            }, 1000);
+        }
+
+        function stopCombatTimer() {
+            clearInterval(Game.timerId);
+            const monster = UI.monster;
+            const currentRight = window.getComputedStyle(monster).right;
+            monster.style.transition = 'none';
+            monster.style.right = currentRight;
+            monster.classList.remove('moving-left');
+        }
+
+        function handleTimeout() {
+            stopCombatTimer();
+            Game.failCount++; 
+            
+            if (Game.failCount >= 6) {
+                playAttack(() => {
+                    showToast("没关系，这个词太狡猾啦，我们先学下一个！", true);
+                    Game.failCount = 0;
+                    nextWord();
+                });
+                return;
+            }
+
+            playFail();
+            const arena = document.getElementById('battle-arena');
+            arena.classList.add('flash-red');
+            setTimeout(() => arena.classList.remove('flash-red'), 500);
+            
+            startCombatTimer();
+        }
+
+        window.onload = function() {
+            if(typeof wordList === 'undefined') return alert("未找到 word_data.js");
+            initSpeech();
+            
+            Game.score = parseInt(localStorage.getItem('totalScore')) || 0;
+            const scoreBoard = document.getElementById('score-board');
+            if(scoreBoard) {
+                scoreBoard.innerText = `🏆 Score: ${Game.score}`;
+            }
+            
+            renderMenu();
+        };
+
+        function playAttack(callback) {
+            stopCombatTimer();
+            if(Game.sfxShoot) { Game.sfxShoot.currentTime = 0; Game.sfxShoot.play().catch(e=>{}); }
+            
+            const beam = UI.spell;
+            beam.style.transition = 'none';
+            beam.style.left = '80px';
+            beam.style.opacity = '1';
+            void beam.offsetWidth;
+            beam.style.transition = 'left 0.2s linear, opacity 0.2s';
+            beam.classList.add('shooting');
+            setTimeout(() => {
+                beam.classList.remove('shooting');
+                beam.style.opacity = '0';
+                
+                UI.monster.style.transition = 'none';
+                UI.monster.style.right = '15px';
+            
+                if (callback) callback();
+            }, 200);
+        }
+
+        function playFail() {
+            Game.sfxFail.currentTime = 0;
+            Game.sfxFail.play().catch(e => console.log("Audio play error", e));
+            UI.harry.classList.remove('anim-shake');
+            void UI.harry.offsetWidth;
+            UI.harry.classList.add('anim-shake');
+        }
+
+        function initSpeech() {
+            const onlineAudio = new Audio();
+            window.speak = function(text) {
+                const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
+                if (isWeChat || text.split(' ').length <= 3) {
+                    onlineAudio.pause();
+                    onlineAudio.currentTime = 0;
+                    onlineAudio.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`;
+                    onlineAudio.play().catch(e => {
+                        systemSpeak(text);
+                    });
+                } else {
+                    systemSpeak(text);
+                }
+            };
+            function systemSpeak(text) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(text);
+                    u.lang = 'en-US';
+                    u.rate = 1.0;
+                    const voices = window.speechSynthesis.getVoices();
+                    const enVoice = voices.find(v => v.lang.includes('en-US'));
+                    if (enVoice) u.voice = enVoice;
+                    window.speechSynthesis.speak(u);
+                }
+            }
+        }
+
+        // 🌟 核心修改 1：弹窗开启时，判断是否锁住“闯关”按钮
+        function openModal(u) {
+            selectedUnitForModal = u;
+            document.getElementById('modal-unit-title').innerText = `Unit ${u} 准备就绪`;
+            
+            // 检查当前通关了多少关 (默认1表示只有第1关解锁)
+            const unlocked = parseInt(localStorage.getItem('unlockedUnit') || 1);
+            const combatBtn = document.getElementById('btn-combat');
+            
+            if (u > unlocked) {
+                // 如果点击的关卡还没解锁 -> 把闯关按钮变灰，换文字，加上提示语
+                combatBtn.className = 'mode-btn combat locked-btn';
+                combatBtn.innerHTML = `🔒 魔法闯关 (需通关 Unit ${u-1})`;
+                combatBtn.onclick = () => { 
+                    alert(`需要先通关前面的 Unit 才能解锁实战哦！\n\n(你可以先点击上方按钮，进入“点读地图”提前复习单词)`); 
+                };
+            } else {
+                // 如果已解锁 -> 变回红色的闯关按钮，可以正常进游戏
+                combatBtn.className = 'mode-btn combat';
+                combatBtn.innerHTML = `⚔️ 魔法对决闯关 (实战)`;
+                combatBtn.onclick = () => { enterMode('combat'); };
+            }
+            
+            document.getElementById('mode-modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('mode-modal').classList.remove('show');
+        }
+
+        function enterMode(mode) {
+            closeModal();
+            let u = selectedUnitForModal;
+            if (!u) return;
+
+            if (mode === 'map') {
+                window.location.href = `map${u}.html`;
+            } else if (mode === 'combat') {
+                if('speechSynthesis' in window) { 
+                    window.speechSynthesis.cancel(); 
+                    const w = new SpeechSynthesisUtterance(''); 
+                    w.volume = 0; 
+                    window.speechSynthesis.speak(w); 
+                }
+                const savedProgress = localStorage.getItem('progress_unit_' + u);
+                
+                if (savedProgress === 'COMPLETED') {
+                    if (confirm(`Unit ${u} 已经通关啦！🎉\n是否需要清除进度，重新复习一遍？`)) {
+                        localStorage.removeItem('progress_unit_' + u);
+                        startGame(u, 0);
+                    }
+                } else if (savedProgress !== null) {
+                    const groupIndex = parseInt(savedProgress);
+                    startGame(u, groupIndex); 
+                } else {
+                    startGame(u, 0);
+                }
+            }
+        }
+
+        // 🌟 核心修改 2：主菜单面的所有 Unit 全部点亮发光，允许点击
+        function renderMenu() {
+            UI.menu.classList.remove('hidden');
+            UI.game.classList.add('hidden'); 
+            UI.unitList.innerHTML = '';
+            
+            [...new Set(wordList.map(w => w.unit))].sort((a,b)=>a-b).forEach(u => {
+                const div = document.createElement('div');
+                // 这里把 isLocked 的判断去掉了，所有按钮都是 active 状态
+                div.className = `unit-item active`;
+                div.textContent = `Unit ${u}`;
+             
+                div.onclick = () => {
+                    openModal(u); 
+                };
+                UI.unitList.appendChild(div);
+            });
+        }
+
+        function startGame(unitId, startGroupIndex = 0) {
+            Game.unit = unitId;
+            const raw = wordList.filter(w => w.unit === unitId);
+            Game.allGroups = [];
+            for(let i=0; i<raw.length; i+=5) Game.allGroups.push(raw.slice(i, i+5));
+            UI.menu.classList.add('hidden'); 
+            UI.game.classList.remove('hidden');
+            loadGroup(startGroupIndex);
+        }
+
+        function loadGroup(idx) {
+            if(idx >= Game.allGroups.length) { 
+                startUnitReview();
+                return; 
+            }
+            Game.groupIndex = idx;
+            Game.currentWords = Game.allGroups[idx];
+            autoSave();
+            startPhase(1);
+        }
+
+        function startPhase(p) {
+            Game.phase = p;
+            Game.wordIndex = 0;
+            Game.failCount = 0; 
+            
+            const pNames = ["Listening (听音选义)", "Meaning (看义选词)", "Spelling (拼写施法)", "Boss Battle (复习)"];
+            UI.statusPhase.textContent = pNames[p-1] || "Review";
+            renderCard();
+        }
+
+        function renderCard() {
+            const wordObj = Game.currentWords[Game.wordIndex];
+            const total = Game.currentWords.length;
+            UI.statusProg.textContent = `Word ${Game.wordIndex+1}/${total}`;
+            
+            UI.areaOpts.classList.add('hidden'); 
+            UI.areaSpell.classList.add('hidden');
+            UI.areaWord.classList.add('hidden'); 
+            UI.areaMeaning.classList.add('hidden');
+            // 如果是 Boss Battle 阶段 (Phase 4)，随机在 1(听音选义), 2(看义选词), 3(拼写施法) 之间切换
+            let activePhase = Game.phase;
+            if (activePhase === 4) {
+                activePhase = Math.floor(Math.random() * 3) + 1;
+            }
+
+            if(activePhase === 1) {
+                // 听音选义 (显示中文释义作为选项)
+                UI.areaOpts.classList.remove('hidden');
+                speak(wordObj.word);
+                generateOptions(wordObj, 1);
+            }
+            else if(activePhase === 2) {
+                // 看义选词 (显示中文释义，选项为英文单词)
+                UI.areaMeaning.classList.remove('hidden');
+                UI.areaMeaning.textContent = wordObj.meaning;
+                UI.areaOpts.classList.remove('hidden');
+                generateOptions(wordObj, 2);
+            }
+            else if(activePhase === 3) {
+                // 拼写施法
+                UI.areaMeaning.classList.remove('hidden');
+                UI.areaMeaning.textContent = wordObj.meaning;
+                UI.areaSpell.classList.remove('hidden');
+                UI.inputSpell.value = ''; UI.inputSpell.focus();
+            }
+            startCombatTimer();
+        }
+
+        function handleSuccess() {
+            Game.failCount = 0;
+            playAttack(() => {
+                showToast("Magic Hit!", true);
+                nextWord();
+            });
+        }
+
+        function handleFail() {
+            Game.failCount++;
+            if (Game.failCount >= 6) {
+                playAttack(() => {
+                    showToast("没关系，这个词太狡猾啦，我们先学下一个！", true);
+                    Game.failCount = 0;
+                    nextWord(); 
+              
+                });
+                return; 
+            }
+
+            playFail();
+            showToast("Miss!", false);
+        }
+
+        function nextWord() {
+            Game.failCount = 0;
+            Game.wordIndex++;
+            if(Game.wordIndex >= Game.currentWords.length) {
+                if(Game.phase < 3) {
+                    startPhase(Game.phase + 1);
+                }
+                else if (Game.phase === 3) { 
+                    addScore(10, "🎉 恭喜完成！<br><span style='color:#00f2fe;'>+10 分</span>");
+                    setTimeout(() => loadGroup(Game.groupIndex + 1), 2500);
+                }
+                else if (Game.phase === 4) {
+                    finishUnit();
+                }
+            } else {
+                renderCard();
+            }
+        }
+
+        function generateOptions(correctObj, phaseType) {
+            UI.areaOpts.innerHTML = '';
+            const others = wordList.filter(w => w.word !== correctObj.word);
+            const distractors = others.sort(() => 0.5 - Math.random()).slice(0, 3);
+            const opts = [...distractors, correctObj].sort(() => 0.5 - Math.random());
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                // phaseType 1 (听音选义) -> 中文选项; phaseType 2 (看义选词) -> 英文选项
+                btn.textContent = (phaseType === 1) ? opt.meaning : opt.word;
+  
+                btn.onclick = () => {
+                    if(opt.word === correctObj.word) handleSuccess();
+                    else { handleFail(); speak(correctObj.word); }
+                };
+                UI.areaOpts.appendChild(btn);
+   
+            });
+            const replay = document.createElement('button');
+            replay.className = 'option-btn'; replay.style.textAlign='center'; replay.textContent='🔊 重听';
+            replay.onclick = () => speak(correctObj.word);
+            UI.areaOpts.appendChild(replay);
+        }
+
+        function checkSpelling() {
+            const input = UI.inputSpell.value.trim().toLowerCase();
+            const target = Game.currentWords[Game.wordIndex].word.toLowerCase();
+            if(input === target) {
+                UI.inputSpell.classList.add('correct');
+                handleSuccess();
+                setTimeout(() => UI.inputSpell.classList.remove('correct'), 500);
+            } else {
+                UI.inputSpell.classList.add('wrong');
+                handleFail();
+            }
+        }
+
+        function startUnitReview() {
+            Game.phase = 4;
+            UI.statusPhase.textContent = "Boss Battle (复习)";
+            
+            // 从当前 Unit 中打乱并抽取最多 20 个单词
+            let unitWords = wordList.filter(w => w.unit === Game.unit);
+            Game.currentWords = unitWords.sort(() => 0.5 - Math.random()).slice(0, 20);
+            
+            Game.wordIndex = 0; 
+            Game.failCount = 0;
+            renderCard();
+        }
+
+        function finishUnit() {
+            showToast("Unit Victory!", true);
+            const currentUnlocked = parseInt(localStorage.getItem('unlockedUnit') || 1);
+            
+            if(Game.unit >= currentUnlocked) {
+                localStorage.setItem('unlockedUnit', Game.unit + 1);
+            }
+            
+            localStorage.setItem('progress_unit_' + Game.unit, 'COMPLETED');
+            setTimeout(() => { UI.game.classList.add('hidden'); renderMenu(); }, 2000);
+        }
+
+        function showToast(msg, isSuccess) {
+            UI.feedback.textContent = msg;
+            UI.feedback.className = `feedback-toast show ${isSuccess ? 'success' : 'error'}`;
+            setTimeout(() => UI.feedback.className = 'feedback-toast', 1000);
+        }
+        function exitToMenu() { UI.game.classList.add('hidden'); renderMenu();
+        }
+        UI.inputSpell.addEventListener('keyup', (e) => { if(e.key === 'Enter') checkSpelling(); });
+        function speakCurrentWord() {
+            if (Game.currentWords && Game.currentWords[Game.wordIndex]) {
+                speak(Game.currentWords[Game.wordIndex].word);
+            }
+        }
+    </script>
+    <div id="save-toast" class="save-toast">💾 进度已保存</div>
+</body>
+</html>
